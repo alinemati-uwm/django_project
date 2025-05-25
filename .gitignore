@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+.env
 # Distribution / packaging
 .Python
 build/
@@ -77,6 +77,9 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+
+.git-Legion
 
 # IPython
 profile_default/
