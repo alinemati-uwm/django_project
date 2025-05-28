@@ -8,6 +8,7 @@ class JobPost(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     salary = models.IntegerField()
     slug = models.SlugField(null=True, max_length=40, unique=True)
+    
 
     def save(self, *args, **kwargs):
         if not self.id:
