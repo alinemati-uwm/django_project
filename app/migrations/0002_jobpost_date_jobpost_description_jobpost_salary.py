@@ -2,7 +2,6 @@
 
 import datetime
 from django.db import migrations, models
-from django.utils import timezone
 
 
 class Migration(migrations.Migration):
@@ -12,9 +11,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(            model_name='jobpost',
+        migrations.AddField(
+            model_name='jobpost',
             name='date',
-            field=models.DateTimeField(auto_now_add=True, default=timezone.make_aware(datetime.datetime(2022, 6, 13, 18, 37, 9, 668023))),
+            field=models.DateTimeField(
+                auto_now_add=True, default=datetime.datetime(2022, 6, 13, 18, 37, 9, 668023)),
             preserve_default=False,
         ),
         migrations.AddField(
