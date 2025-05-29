@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -49,7 +50,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "chat.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -62,11 +63,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-        },
-    },
+        }, },
 ]
 
-WSGI_APPLICATION = "chat.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Database
