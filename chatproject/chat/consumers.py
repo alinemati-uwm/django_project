@@ -11,8 +11,9 @@ class ChatConsumer(WebsocketConsumer):
         Called when the WebSocket is handshaking as part of the connection process.
         """
         self.accept()  # Accept the WebSocket connection
-
         self.send('{"type":"accept" , "status":"accepted"}')  # Send a welcome message
+        print(self.scope.get("user"))
+        print(self.scope.get("session"))
 
 
     def receive(self, text_data=None, bytes_data=None):
