@@ -234,7 +234,7 @@
     <header>
         <a href="{% url 'home' %}"><button>Back</button></a>
         <div>
-            <img src="face.png">
+            <img src="../../static/chat/face.png" alt="Person's face">
             <p>person's name</p>
         </div>
         <p class="name-of-sender">Me : the user's name</p>
@@ -265,6 +265,44 @@
     <footer>
         <textarea name="text" oninput="this.style.height = ''; this.style.height = this.scrollHeight +'px'" id="the-message-to-send"></textarea>
         <button id="send-message-button">Send</button>
-    </footer>
+    </footer>    <script>
+        const url= `ws://127.0.0.1:8000/websocket/`;
+        const chat_websocket = new WebSocket(url);
+        
+        // Wait for the connection to be established before sending messages
+        chat_websocket.onopen = function(event) {
+            console.log('WebSocket connection established');
+            // Initial message after connection is established
+            chat_websocket.send('{"type": "chat_message", "message": "Hello, world!"}');
+        };
+
+        const send_button = document.getElementById('send-message-button');
+        send_button.addEventListener('click', function() {
+            const messageInput = document.getElementById('the-message-to-send');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                if (chat_websocket.readyState === WebSocket.OPEN) {
+                    chat_websocket.send(JSON.stringify({
+                        type: "message",
+                        message: message
+                    }));
+                    messageInput.value = '';
+                    // Reset the height of the textarea
+                    messageInput.style.height = '';
+                } else {
+                    console.log('WebSocket not connected. Current state:', chat_websocket.readyState);
+                }
+            }
+        });
+
+        chat_websocket.onmessage = function(event) {
+            console.log('Message from server ', event);
+        };
+
+
+    </script>
+
+
 </body>
 </html>
