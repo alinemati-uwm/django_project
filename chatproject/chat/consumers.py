@@ -13,8 +13,12 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()  # Accept the WebSocket connection
         self.send('{"type":"accept" , "status":"accepted"}')  # Send a welcome message
         print(self.scope.get("user"))
-        print(self.scope.get("session"))
-
+        # print(self.scope.get("session"))
+        # add id, firstname, and last name and email to the console
+        print(self.scope.get("user").id)
+        print(self.scope.get("user").first_name)
+        print(self.scope.get("user").last_name)
+        print(self.scope.get("user").email)
 
     def receive(self, text_data=None, bytes_data=None):
         """
