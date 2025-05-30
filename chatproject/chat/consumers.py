@@ -12,6 +12,8 @@ class ChatConsumer(WebsocketConsumer):
         """
         self.accept()  # Accept the WebSocket connection
 
+        self.send('{"type":"accept" , "status":"accepted"}')  # Send a welcome message
+
 
     def receive(self, text_data=None, bytes_data=None):
         """
@@ -19,6 +21,7 @@ class ChatConsumer(WebsocketConsumer):
         """
         # Here you can handle incoming messages
         print("Message received:", text_data)
+        self.send('{"type":"event_arrive" , "status":"you have a new message which is arrived!  "}')  # Send a response back to the client
 
     def disconnect(self, code):
         print("WebSocket disconnected with code:", code)
