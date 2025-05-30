@@ -37,6 +37,11 @@ class ChatConsumer(WebsocketConsumer):
         else:
             print("No session found in scope")
 
+
+        print(self.channel_layer)
+        print(type(self.channel_layer))
+
+
     def receive(self, text_data=None, bytes_data=None):
         """
         Called when a message is received from the WebSocket.
