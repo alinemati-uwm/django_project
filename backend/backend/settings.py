@@ -132,6 +132,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 
+# Celery Configuration
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
+#print(100 * "=")
+# Debugging line to check if the environment variables are loaded correctly
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+# Debugging line to check if the key is loaded
+# print(f"OpenAI API Key: {OPENAI_API_KEY}")
+# print(100 * "=")
