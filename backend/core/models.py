@@ -4,6 +4,8 @@ from core.tasks import handle_ai_request_job
 import os
 import os
 from openai import OpenAI
+
+
 class Recipe(models.Model):
     """Represents a recipe in the system."""
     name = models.CharField(max_length=255)
@@ -22,11 +24,61 @@ class ChatSession(models.Model):
 
 # AI request model
 class AichatSession(models.Model):
-    """Represents an AI chat session in the system."""
+    """
+
+    """
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 # Status choices for AI requests
+    def get_last_request(self):
+        """Get the last AI request in this session. or None if no requests exist.
+            This code fetches the latest (most recently created) related request for the current object, based on the created_at timestamp."""
+        return self.requests.all().order_by('-created_at').first()
+
+    def _create_request(self, message, rule="user"):
+        """Create a new AI request in this session."""
+        return {"role": rule, "content": message}
+
+    def create_first_message(self, message):
+        """Create the first message in the AI chat session."""
+        return [
+            self._create_message(
+                "you are a helpful assistant, you will help the user with their requests.",
+                rule="system"
+            ),
+            self._create_request(message, rule="user")
+        ]
+
+    def messages(self):
+        """Get all messages in the AI chat session."""
+        all_messages = []
+        requests = self.get_last_request()
+        if requests:
+            all_messages.extend(requests.message)
+            try:
+                all_messages.extend(
+                    requests.response['choices'][0]['message']['content'])
+            except (KeyError, IndexError, TypeError) as e:
+                print("No response content found in the request.")
+                pass
+        return all_messages
+
+    def send(self, message):
+        """Send a message in the AI chat session."""
+        last_request = self.get_last_request()
+
+        if not last_request:
+            AiRequest.objects.create(
+                session=self, messages=self.create_first_message(message)
+            )
+        elif last_request.status in [AiRequest.COMPLETED, AiRequest.FAILED]:
+            AiRequest.objects.create(
+                session=self,
+                messages=self.messages() + [self._create_request(message, "user")]
+            )
+        else:
+            return
 
 
 class AiRequest(models.Model):
@@ -47,6 +99,7 @@ class AiRequest(models.Model):
     )
     session = models.ForeignKey(
         AichatSession,
+        related_name='requests',
         on_delete=models.CASCADE,
         null=True, blank=True
     )
@@ -61,7 +114,6 @@ class AiRequest(models.Model):
     # Handle for openai requests
 
     def handle(self):
-
         """Handle the AI request."""
 
         self.status = self.RUNNING
@@ -70,7 +122,7 @@ class AiRequest(models.Model):
         print(100 * "=")
         print("Starting AI request handling...")
         print("OPENAI_API_KEY:", os.environ.get("OPENAI_API_KEY"))
-        
+
         client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         print(100 * "=")
         print(self.message)
@@ -80,8 +132,8 @@ class AiRequest(models.Model):
         try:
             print("Step 2: Sending request to OpenAI...")
             response = client.chat.completions.create(
-            model="gpt-4o-mini",            
-            messages=self.message
+                model="gpt-4o-mini",
+                messages=self.message
             )
             print("Step 3: Received response from OpenAI.")
             self.response = response.to_dict()
@@ -97,7 +149,6 @@ class AiRequest(models.Model):
             print("Error:", e)
         print("Step 6: Saving the AiRequest instance.")
         self.save()
-
 
     def save(self, **kwargs):
         """Override save method to queue the job."""
